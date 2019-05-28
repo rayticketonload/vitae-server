@@ -1,0 +1,22 @@
+.DS_Store
+node_modules/
+dist/
+*/node_modules/
+*/dist/
+*/mock/upload/
+*/npm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+mock/upload/
+snapshot/_dr_tap-web/
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+\.history/
+
+\.vscode/launch\.json
