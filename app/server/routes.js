@@ -98,6 +98,11 @@ module.exports = function(app) {
   app.post("/api/updataGoodInfoById", GC.updataGoodInfoById);
 
   /**
+   * 删除盒子
+   */
+  // app.post("/api/deleteItemById", PC.deleteItemById);
+
+  /**
    * 获取盒子內所有物品列表
    */
   app.post("/api/getGoodListById", GC.getGoodListById);

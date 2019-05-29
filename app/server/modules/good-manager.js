@@ -70,7 +70,9 @@ exports.getGoodInfoById = function (data, callback) {
       date: 1,
       parent_id: 1,
       id: 1,
-      type: 1
+      type: 1,
+      quantity: 1,
+      remind_date: 1
     },
     function (e, res) {
       if (e) callback(e);
@@ -215,7 +217,7 @@ exports.search = data =>
   });
 
 /**
- * 更新盒子信息
+ * 更新物品信息
  * @param {*} data
  * user_id:"",
  * id:'',
@@ -237,8 +239,9 @@ exports.updateGoodInfo = function (data, callback) {
       }
       
       o.quantity = data.quantity;
+      o.remind_date = data.remind_date;
       o.name = data.name;
-      o.parent_id = data.parentId;
+      o.parent_id = data.parent_id;
       o.pic_address = data.pic_address;
       o.expire_date = data.expire_date;
       o.update_timestamp = moment().format("x");
@@ -253,6 +256,9 @@ exports.updateGoodInfo = function (data, callback) {
             name: o.name,
             parent_id: o.parent_id,
             pic_address: o.pic_address,
+            quantity: o.quantity,
+            remind_date: o.remind_date,
+            expire_date: o.expire_date,
             id: o.id,
             type: o.type,
             date: o.date,
@@ -262,3 +268,58 @@ exports.updateGoodInfo = function (data, callback) {
     }
   });
 };
+
+/**
+ * 删除物品
+ * @param {*} req
+ * @param {*} res
+ */
+// exports.deleteItemById = (req, res) => {
+//   //获取顶点盒子以下的所有盒子数
+//   var packs = [];
+//   var goods = [];
+//   PM.getUserAllPackListById({ user_id: req.user.user_id, id: req.body.id }, function(err, data) {
+//     if (err)
+//       res.status(200).send({
+//         code: 100,
+//         msg: err
+//       });
+//     if (data.length > 0) {
+//       packs = data.concat();
+//       GM.getUserAllPackListByPackList(
+//         {
+//           user_id: req.user.user_id,
+//           packList: packs
+//         },
+//         function(err, data) {
+//           if (err)
+//             res.status(200).send({
+//               code: 100,
+//               msg: err
+//             });
+//           if (data.length > 0) {
+//             goods = data.concat();
+//           }
+//           PM.deletePackByList({ list: packs.map(item => item.id), user_id: req.user.user_id }, function(err, data) {
+//             if (!err) {
+//               GM.deleteGoodByList({ list: goods.map(item => item.id), user_id: req.user.user_id }, function(err, data) {
+//                 if (!err) {
+//                   res.status(200).send({
+//                     code: 200,
+//                     data: data,
+//                     success: true
+//                   });
+//                 }
+//               });
+//             }
+//           });
+//         }
+//       );
+//     } else {
+//       res.status(200).send({
+//         code: 200,
+//         data: "没有数据"
+//       });
+//     }
+//   });
+// };

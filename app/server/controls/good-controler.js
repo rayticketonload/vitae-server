@@ -5,6 +5,7 @@ exports.addGood = function (req, res) {
       pic_address: req.body.pic || "", //图片
       user_id: req.user.user_id,
       expire_date: req.body.expireDate || null, //过期时间
+      remind_date: req.body.remindDate || null, //提醒时间
       name: req.body.name,
       parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null,
       quantity: req.body.quantity || 1 //数量
@@ -123,7 +124,9 @@ exports.updataGoodInfoById = function (req, res) {
       pic_address: req.body.pic || [], //图片
       user_id: req.user.user_id,
       expire_date: req.body.expireDate || null, //过期时间
+      remind_date: req.body.remindDate || null, //提醒时间
       name: req.body.name,
+      quantity: req.body.quantity || 1, // 数量
       parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null
     },
     function (err, data) {
