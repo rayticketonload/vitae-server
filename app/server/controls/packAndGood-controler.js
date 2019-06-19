@@ -152,6 +152,7 @@ setPAGTotalInfoInPacks = function (userId, data) {
 
 
 /**
+ * 旧
  * 获取最近编辑过的数据（盒和物品）（默认6个）
  */
 exports.getNewest = (req, res) => {
@@ -184,4 +185,57 @@ exports.getNewest = (req, res) => {
     .catch(err => {
       res.status(400).send("err", err);
     });
+};
+
+/**
+ * 新
+ * 获取最近编辑过的数据（盒和物品）（默认6个）
+ */
+exports.getNewestModify = (req, res) => {
+  let pmData = [];
+  let gmData = [];
+  let result = [];
+  PM.getUserAllPackListById(
+    {
+      user_id: req.user.user_id,
+      id: req.body.id,
+    },
+    function(err, data) {
+      if (!err) {
+        let preData = data.concat();
+        preData.map(v => {
+          if (v.parent_id) {
+            pmData.push(v);
+          }
+        });
+        GM.getUserAllPackListByPackList(
+          {
+            user_id: req.user.user_id,
+            packList: preData,
+          },
+          function(err, data) {
+            if (!err) {
+              gmData = data.concat();
+              result = pmData.concat(gmData);
+              result.sort((a, b) => b.update_timestamp - a.update_timestamp);
+              res.status(200).send({
+                code: 200,
+                data: result.slice(0, 6),
+              });
+            } else {
+              res.status(200).send({
+                code: 200,
+                errMsg: err,
+              });
+            }
+          }
+        );
+      } else {
+        res.status(200).send({
+          code: 200,
+          errMsg: err,
+        });
+      }
+    }
+  );
 };

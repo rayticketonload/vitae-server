@@ -118,9 +118,14 @@ module.exports = function(app) {
   app.post("/api/search", PAGC.search);
 
   /**
+   * testAPI
+   */
+  app.post("/api/getNewestModify", PAGC.getNewestModify);
+
+  /**
    * 获取最近编辑过的数据（盒和物品）（默认6个）
    */
-  app.get("/api/getNewest", PAGC.getNewest);
+  app.get("/api/getNewest", PAGC.getNewestModify);
 
 
   /**
@@ -139,4 +144,6 @@ module.exports = function(app) {
   app.get("*", function(req, res) {
     res.status(404).end();
   });
+
+  
 };
