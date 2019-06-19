@@ -46,15 +46,96 @@ exports.getPackListByDefaultPack = function(req, res) {
     PM.getUserAllPackListById(
       { user_id: req.user.user_id, id: user.default_pack },
       function(err, data) {
-        if (err)
+        if (!err) {
+          res.status(200).send({
+            code: 200,
+            data: data,
+          });
+        } else {
           res.status(200).send({
             code: 100,
             msg: err,
           });
-        res.status(200).send({
-          code: 200,
-          data: data,
-        });
+        }
+      },
+    );
+  });
+};
+
+/**
+ * 获取当前用户默认顶级盒子下的盒子列表
+ * 用于”修改盒子“页面的”存放位置“选择菜单的盒子列表
+ * @param {*} req
+ * @param {*} res
+ */
+exports.packListForPackModifySelectMenu = function(req, res) {
+  AM.getAccountByUserId(req.user.user_id).then(user => {
+    //获取顶点盒子以下的所有盒子数
+    PM.getUserAllPackListById(
+      {
+        user_id: req.user.user_id,
+        id: user.default_pack,
+      },
+      function(err, data) {
+        if (!err) {
+          let allPacks = data.concat();
+          let allPacksId = [];
+          allPacks.map(v => {
+            if (v.id) {
+              allPacksId.push(v.id);
+            }
+          });
+
+          PM.getUserAllPackListById(
+            {
+              user_id: req.user.user_id,
+              id: req.body.id,
+            },
+            function(err, data) {
+              if (!err) {
+                let selfPacks = data.concat();
+                let selfPacksId = [];
+                selfPacks.map(v => {
+                  if (v.id) {
+                    selfPacksId.push(v.id);
+                  }
+                });
+
+                let diffId = [];
+                let diff = [];
+
+                allPacksId.map(v => {
+                  if (selfPacksId.indexOf(v) < 0) {
+                    diffId.push(v);
+                  }
+                });
+
+                allPacks.map(v => {
+                  diffId.map(item => {
+                    if (v.id == item) {
+                      diff.push(v);
+                    }
+                  })
+                });
+
+                res.status(200).send({
+                  code: 200,
+                  data: diff,
+                });
+              } else {
+                res.status(200).send({
+                  code: 100,
+                  errMsg: err,
+                });
+              }
+            },
+          );
+        } else {
+          res.status(200).send({
+            code: 100,
+            errMsg: err,
+          });
+        }
       },
     );
   });

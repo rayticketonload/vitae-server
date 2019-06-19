@@ -155,37 +155,37 @@ setPAGTotalInfoInPacks = function (userId, data) {
  * 旧
  * 获取最近编辑过的数据（盒和物品）（默认6个）
  */
-exports.getNewest = (req, res) => {
-  var pmSearch = PM.search({
-    key: "",
-    user_id: req.user.user_id
-  });
-  var gmSearch = GM.search({
-    key: "",
-    user_id: req.user.user_id
-  });
-  Promise.all([pmSearch, gmSearch])
-    .then(results => {
-      //
-      let packList = results[0].concat();
-      let goodList = results[1].concat();
-      let list = packList.concat(goodList);
-      list.sort((a, b) => (
-         b.update_timestamp -a.update_timestamp 
-      ))
+// exports.getNewest = (req, res) => {
+//   var pmSearch = PM.search({
+//     key: "",
+//     user_id: req.user.user_id
+//   });
+//   var gmSearch = GM.search({
+//     key: "",
+//     user_id: req.user.user_id
+//   });
+//   Promise.all([pmSearch, gmSearch])
+//     .then(results => {
+//       //
+//       let packList = results[0].concat();
+//       let goodList = results[1].concat();
+//       let list = packList.concat(goodList);
+//       list.sort((a, b) => (
+//          b.update_timestamp -a.update_timestamp 
+//       ))
 
-      res.status(200).send({
-        code: 200,
-        data: {
-          list: list.slice(0,6),
-        }
-      });
+//       res.status(200).send({
+//         code: 200,
+//         data: {
+//           list: list.slice(0,6),
+//         }
+//       });
 
-    })
-    .catch(err => {
-      res.status(400).send("err", err);
-    });
-};
+//     })
+//     .catch(err => {
+//       res.status(400).send("err", err);
+//     });
+// };
 
 /**
  * 新

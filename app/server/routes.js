@@ -76,6 +76,13 @@ module.exports = function(app) {
    * 获取当前用户默认顶级盒子下的盒子列表
    */
   app.get("/api/getPackListByDefaultPack", PC.getPackListByDefaultPack);
+  
+
+  /**
+   * 获取当前用户默认顶级盒子下的盒子列表
+   * 用于”修改盒子“页面的”存放位置“选择菜单的盒子列表
+   */
+  app.post("/api/packListForPackModifySelectMenu", PC.packListForPackModifySelectMenu);
 
   /**
    * 获取当前用户可选默认盒子列表
@@ -111,7 +118,7 @@ module.exports = function(app) {
    * 获取盒子內所有盒子和物品列表
    */
   app.post("/api/getPAGListById", PAGC.getPackAndGoodListById);
-
+  
   /**
    * 搜索  根据类型及关键字 获取盒子列表及物品列表
    */
@@ -120,7 +127,7 @@ module.exports = function(app) {
   /**
    * 获取最近编辑过的数据（盒和物品）（默认6个）
    */
-  app.get("/api/getNewest", PAGC.getNewestModify);
+  app.post("/api/getNewestModify", PAGC.getNewestModify);
 
   /**
    * 上传
@@ -131,11 +138,6 @@ module.exports = function(app) {
    * 下载
    */
   app.get("/api/download/photo/:path", FILE.downloadPhoto);
-
-  /**
-  * testAPI
-  */
-  app.post("/api/getNewestModify", PAGC.getNewestModify);
 
   /**
    * 404
