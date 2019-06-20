@@ -143,6 +143,31 @@ exports.updataGoodInfoById = function (req, res) {
       }
     }
   );
+};
 
-
+/**
+ * 删除单个物品
+ */
+exports.delSingleItemById = function(req, res) {
+  GM.delSingleItemById(
+    {
+      id: req.body.id,
+      user_id: req.user.user_id,
+    },
+    function (err, data) {
+      if (!err) {
+        res.status(200).send({
+          code: 200,
+          success: true,
+          data: data,
+        });
+      } else {
+        res.status(200).send({
+          code: 200,
+          success: false,
+          errMsg: err,
+        });
+      }
+    }
+  )
 };

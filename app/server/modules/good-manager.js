@@ -1,56 +1,76 @@
 /*
 	ESTABLISH DATABASE CONNECTION
 */
-var MongoDB = require("mongodb").Db;
-var Server = require("mongodb").Server;
-var IDM = require("./ids-manager");
-var moment = require("moment");
+var MongoDB = require('mongodb').Db;
+var Server = require('mongodb').Server;
+var IDM = require('./ids-manager');
+var moment = require('moment');
 
-var dbName = process.env.DB_NAME || "vitae";
-var dbHost = process.env.DB_HOST || "localhost";
+var dbName = process.env.DB_NAME || 'vitae';
+var dbHost = process.env.DB_HOST || 'localhost';
 var dbPort = process.env.DB_PORT || 27017;
 
-var db = new MongoDB(dbName, new Server(dbHost, dbPort, {
-  auto_reconnect: true
-}), {
-  w: 1
-});
-db.open(function (e, d) {
+var db = new MongoDB(
+  dbName,
+  new Server(dbHost, dbPort, {
+    auto_reconnect: true,
+  }),
+  {
+    w: 1,
+  },
+);
+db.open(function(e, d) {
   if (e) {
     console.log(e);
   } else {
-    if (process.env.NODE_ENV == "live") {
-      db.authenticate(process.env.DB_USER, process.env.DB_PASS, function (e, res) {
+    if (process.env.NODE_ENV == 'live') {
+      db.authenticate(process.env.DB_USER, process.env.DB_PASS, function(
+        e,
+        res,
+      ) {
         if (e) {
-          console.log("mongo :: error: not authenticated", e);
+          console.log('mongo :: error: not authenticated', e);
         } else {
-          console.log('mongo :: authenticated and connected to database :: "' + dbName + '"');
+          console.log(
+            'mongo :: authenticated and connected to database :: "' +
+              dbName +
+              '"',
+          );
         }
       });
     } else {
-      console.log('mongo :: connected to database :: "' + dbName + '" :: collection :: goods');
+      console.log(
+        'mongo :: connected to database :: "' +
+          dbName +
+          '" :: collection :: goods',
+      );
     }
   }
 });
 
-var goods = db.collection("goods");
+var goods = db.collection('goods');
 /**
  * 新增物品
  */
-exports.addGood = function (data, callback) {
-  goods.findOne({
-    $and: [{
-      name: data.name,
-      user_id: data.user_id,
-      parent_id: data.parent_id
-    }]
-  }, function (e, o) {
-    if (o) {
-      callback("已有相同的物品名");
-    } else {
-      addGood(data, callback);
-    }
-  });
+exports.addGood = function(data, callback) {
+  goods.findOne(
+    {
+      $and: [
+        {
+          name: data.name,
+          user_id: data.user_id,
+          parent_id: data.parent_id,
+        },
+      ],
+    },
+    function(e, o) {
+      if (o) {
+        callback('已有相同的物品名');
+      } else {
+        addGood(data, callback);
+      }
+    },
+  );
 };
 
 /**
@@ -58,11 +78,13 @@ exports.addGood = function (data, callback) {
  * @param {*} data
  * @param {*} callback
  */
-exports.getGoodInfoById = function (data, callback) {
-  goods.findOne({
+exports.getGoodInfoById = function(data, callback) {
+  goods.findOne(
+    {
       user_id: data.user_id,
-      id: data.id
-    }, {
+      id: data.id,
+    },
+    {
       _id: 0,
       name: 1,
       pic_address: 1,
@@ -72,12 +94,12 @@ exports.getGoodInfoById = function (data, callback) {
       id: 1,
       type: 1,
       quantity: 1,
-      remind_date: 1
+      remind_date: 1,
     },
-    function (e, res) {
+    function(e, res) {
       if (e) callback(e);
       else callback(null, res);
-    }
+    },
   );
 };
 
@@ -86,18 +108,20 @@ exports.getGoodInfoById = function (data, callback) {
  * @param {*} data
  * @param {*} callback
  */
-exports.getListById = function (data, callback) {
+exports.getListById = function(data, callback) {
   var obj = {
     user_id: data.user_id,
-    parent_id: data.parent_id
+    parent_id: data.parent_id,
   };
-  goods.find(obj, {
-    user_id: 0,
-    _id: 0
-  }).toArray(function (e, res) {
-    if (e) callback(e);
-    else callback(null, res);
-  });
+  goods
+    .find(obj, {
+      user_id: 0,
+      _id: 0,
+    })
+    .toArray(function(e, res) {
+      if (e) callback(e);
+      else callback(null, res);
+    });
 };
 
 /**
@@ -114,13 +138,13 @@ exports.getListById = function (data, callback) {
  * @param {function} callback
  */
 function addGood(data, callback) {
-  IDM.getNextSequence("goodid", function (err, result) {
+  IDM.getNextSequence('goodid', function(err, result) {
     data.id = result.value.seq.toString();
-    data.type = "good";
-    data.date = moment().format("YYYY-MM-DD HH:mm:ss");
-    data.create_timestamp = moment().format("x");
-    data.update_timestamp = moment().format("x");
-    goods.insertOne(data, function (err, result) {
+    data.type = 'good';
+    data.date = moment().format('YYYY-MM-DD HH:mm:ss');
+    data.create_timestamp = moment().format('x');
+    data.update_timestamp = moment().format('x');
+    goods.insertOne(data, function(err, result) {
       if (callback) callback(err, data);
     });
   });
@@ -133,10 +157,10 @@ function addGood(data, callback) {
  * packList :[]
  * @param {*} callback
  */
-exports.getUserAllPackListByPackList = function (data, callback) {
-  if (!data.user_id) callback("请提供 user id");
+exports.getUserAllPackListByPackList = function(data, callback) {
+  if (!data.user_id) callback('请提供 user id');
   //查询当前用户所有物品
-  getUserAllGoodList(data.user_id, function (err, res) {
+  getUserAllGoodList(data.user_id, function(err, res) {
     var packList = data.packList;
     var list = [];
     if (res.length > 0) {
@@ -160,15 +184,20 @@ exports.getUserAllPackListByPackList = function (data, callback) {
  * @param {*} callback
  */
 function getUserAllGoodList(user_id, callback) {
-  goods.find({
-    user_id: user_id
-  }, {
-    user_id: 0,
-    _id: 0
-  }).toArray(function (e, res) {
-    if (e) callback(e);
-    else callback(null, res);
-  });
+  goods
+    .find(
+      {
+        user_id: user_id,
+      },
+      {
+        user_id: 0,
+        _id: 0,
+      },
+    )
+    .toArray(function(e, res) {
+      if (e) callback(e);
+      else callback(null, res);
+    });
 }
 
 /**
@@ -179,15 +208,31 @@ function getUserAllGoodList(user_id, callback) {
  * @param {*} callback
  */
 exports.deleteGoodByList = (data, callback) => {
-  goods.remove({
-    id: {
-      $in: data.list
+  goods.remove(
+    {
+      id: {
+        $in: data.list,
+      },
+      user_id: data.user_id,
     },
-    user_id: data.user_id
-  }, function (err, data) {
-    if (err) callback(err);
-    else callback(null, data);
-  });
+    function(err, data) {
+      if (err) callback(err);
+      else callback(null, data);
+    },
+  );
+};
+
+exports.delSingleItemById = (data, callback) => {
+  goods.remove(
+    {
+      id: data.id,
+      user_id: data.user_id,
+    },
+    function(err, data) {
+      if (err) callback(err);
+      else callback(null, data);
+    },
+  );
 };
 
 /**
@@ -198,18 +243,21 @@ exports.deleteGoodByList = (data, callback) => {
 exports.search = data =>
   new Promise((resolve, reject) => {
     goods
-      .find({
-        name: {
-          $regex: data.key,
-          $options: "i"
+      .find(
+        {
+          name: {
+            $regex: data.key,
+            $options: 'i',
+          },
+          user_id: data.user_id,
         },
-        user_id: data.user_id
-      }, {
-        user_id: 0,
-        _id: 0,
-        good_children: 0,
-        pack_children: 0
-      })
+        {
+          user_id: 0,
+          _id: 0,
+          good_children: 0,
+          pack_children: 0,
+        },
+      )
       .toArray((err, data) => {
         if (err) reject(err);
         else resolve(data);
@@ -224,102 +272,54 @@ exports.search = data =>
  * name:''
  * @param {*} callback
  */
-exports.updateGoodInfo = function (data, callback) {
-  goods.findOne({
-    user_id: data.user_id,
-    id: data.id
-  }, function (e, o) {
-    if (e) {
-      callback(e);
-      return;
-    } else {
-      if (!o) {
-        callback("没有这个物品");
+exports.updateGoodInfo = function(data, callback) {
+  goods.findOne(
+    {
+      user_id: data.user_id,
+      id: data.id,
+    },
+    function(e, o) {
+      if (e) {
+        callback(e);
         return;
+      } else {
+        if (!o) {
+          callback('没有这个物品');
+          return;
+        }
+
+        o.quantity = data.quantity;
+        o.remind_date = data.remind_date;
+        o.name = data.name;
+        o.parent_id = data.parent_id;
+        o.pic_address = data.pic_address;
+        o.expire_date = data.expire_date;
+        o.update_timestamp = moment().format('x');
+
+        //
+        goods.save(
+          o,
+          {
+            safe: true,
+          },
+          function(e) {
+            if (e) callback(e);
+            else
+              callback(null, {
+                name: o.name,
+                parent_id: o.parent_id,
+                pic_address: o.pic_address,
+                quantity: o.quantity,
+                remind_date: o.remind_date,
+                expire_date: o.expire_date,
+                id: o.id,
+                type: o.type,
+                date: o.date,
+                create_timestamp: o.create_timestamp,
+              });
+          },
+        );
       }
-      
-      o.quantity = data.quantity;
-      o.remind_date = data.remind_date;
-      o.name = data.name;
-      o.parent_id = data.parent_id;
-      o.pic_address = data.pic_address;
-      o.expire_date = data.expire_date;
-      o.update_timestamp = moment().format("x");
-
-      //
-      goods.save(o, {
-        safe: true
-      }, function (e) {
-        if (e) callback(e);
-        else
-          callback(null, {
-            name: o.name,
-            parent_id: o.parent_id,
-            pic_address: o.pic_address,
-            quantity: o.quantity,
-            remind_date: o.remind_date,
-            expire_date: o.expire_date,
-            id: o.id,
-            type: o.type,
-            date: o.date,
-            create_timestamp: o.create_timestamp,
-          });
-      });
-    }
-  });
+    },
+  );
 };
-
-/**
- * 删除物品
- * @param {*} req
- * @param {*} res
- */
-// exports.deleteItemById = (req, res) => {
-//   //获取顶点盒子以下的所有盒子数
-//   var packs = [];
-//   var goods = [];
-//   PM.getUserAllPackListById({ user_id: req.user.user_id, id: req.body.id }, function(err, data) {
-//     if (err)
-//       res.status(200).send({
-//         code: 100,
-//         msg: err
-//       });
-//     if (data.length > 0) {
-//       packs = data.concat();
-//       GM.getUserAllPackListByPackList(
-//         {
-//           user_id: req.user.user_id,
-//           packList: packs
-//         },
-//         function(err, data) {
-//           if (err)
-//             res.status(200).send({
-//               code: 100,
-//               msg: err
-//             });
-//           if (data.length > 0) {
-//             goods = data.concat();
-//           }
-//           PM.deletePackByList({ list: packs.map(item => item.id), user_id: req.user.user_id }, function(err, data) {
-//             if (!err) {
-//               GM.deleteGoodByList({ list: goods.map(item => item.id), user_id: req.user.user_id }, function(err, data) {
-//                 if (!err) {
-//                   res.status(200).send({
-//                     code: 200,
-//                     data: data,
-//                     success: true
-//                   });
-//                 }
-//               });
-//             }
-//           });
-//         }
-//       );
-//     } else {
-//       res.status(200).send({
-//         code: 200,
-//         data: "没有数据"
-//       });
-//     }
-//   });
-// };
