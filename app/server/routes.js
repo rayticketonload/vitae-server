@@ -118,11 +118,11 @@ module.exports = function(app) {
    * 获取盒子內所有盒子和物品列表
    */
   app.post("/api/getPAGListById", PAGC.getPackAndGoodListById);
-  
+
   /**
    * 搜索  根据类型及关键字 获取盒子列表及物品列表
    */
-  app.post("/api/search", PAGC.search);
+  app.post("/api/search", PAGC.searchByPackId);
 
   /**
    * 获取最近编辑过的数据（盒和物品）（默认6个）

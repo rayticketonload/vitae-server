@@ -53,6 +53,7 @@ exports.getPackAndGoodListById = function (req, res) {
 
 /**
  * 搜索  根据类型及关键字 获取盒子列表及物品列表
+ * 旧
  * @param {*} req
  * @param {*} res
  */
@@ -106,6 +107,116 @@ exports.search = (req, res) => {
         }
       });
 
+    })
+    .catch(err => {
+      res.status(400).send("err", err);
+    });
+};
+
+/**
+ * 搜索  根据类型及关键字(用盒子ID锁定搜索范围) 获取盒子列表及物品列表
+ * 新
+ * @param {*} req
+ * @param {*} res
+ */
+exports.searchByPackId = (req, res) => {
+  var pmSearch = PM.search({
+    key: req.body.key,
+    user_id: req.user.user_id
+  });
+  var gmSearch = GM.search({
+    key: req.body.key,
+    user_id: req.user.user_id
+  });
+  Promise.all([pmSearch, gmSearch])
+    .then(results => {
+      //
+      let packList = results[0].concat();
+      let goodList = results[1].concat();
+
+      PM.getUserAllPackListById (
+        {
+          user_id: req.user.user_id,
+          id: req.body.id,
+        },
+        function (err, data) {
+          if (!err) {
+            let packResult = [];
+            let packListById = data.concat();
+            packList.map(v => {
+              packListById.map(k => {
+                if (v.id == k.id) {
+                  packResult.push(v);
+                }
+              });
+            });
+
+            GM.getUserAllPackListByPackList (
+              {
+                user_id: req.user.user_id,
+                packList: packListById,
+              },
+              function (err, data) {
+                if (!err) {
+                  let goodResult = [];
+                  let goodListById = data.concat();
+
+                  goodList.map(v => {
+                    goodListById.map(k => {
+                      if (v.id == k.id) {
+                        goodResult.push(v);
+                      }
+                    });
+                  });
+
+                  PM.getUserAllPackList (
+                    req.user.user_id,
+                    function (err, data) {
+                      if (!err) {
+                        let allPasks = data.concat(); //查当前用户全部盒子
+      
+                        for (let index = 0; index < packResult.length; index++) {
+                          let pack = packResult[index];
+                          allPasks.some((item) => {
+                            if (pack.parent_id === item.id) {
+                              pack.parent_name = item.name;
+                              return;
+                            }
+                          });
+                        }
+      
+                        for (let index2 = 0; index2 < goodResult.length; index2++) {
+                          let good = goodResult[index2];
+                          allPasks.some((item) => {
+                            if (good.parent_id === item.id) {
+                              good.parent_name = item.name;
+                              return;
+                            }
+                          });
+                        }
+      
+                        res.status(200).send({
+                          code: 200,
+                          data: {
+                            packList: packResult,
+                            goodList: goodResult,
+                          }
+                        });
+                      } else {
+                        res.status(400).send("err", err);
+                      }
+                    }
+                  );
+                } else {
+                  res.status(400).send("err", err);
+                }
+              },
+            )
+          } else {
+            res.status(400).send("err", err);
+          }
+        },
+      )
     })
     .catch(err => {
       res.status(400).send("err", err);
