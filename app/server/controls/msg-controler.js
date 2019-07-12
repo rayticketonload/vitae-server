@@ -114,9 +114,20 @@ exports.initMsg = function(req, res) {
 
                 filter_1stTime.map(item => {
                   data.map(f => {
-                    if (item.id == f.item_id && item.remind_date && f.item_remind_date && item.remind_date == f.item_remind_date) {
+                    if (
+                        item.id == f.item_id && 
+                        item.remind_date && 
+                        f.item_remind_date &&
+                        item.expire_date &&
+                        f.item_expire_date &&
+                        item.expire_date == f.item_expire_date &&
+                        item.remind_date == f.item_remind_date
+                      ) {
                       needToSplice.push(item);
-                    }
+                    };
+                    if (item.id == f.item_id && !item.remind_date && f.item_expire_date && item.expire_date == f.item_expire_date) {
+                      needToSplice.push(item);
+                    };
                   });
                 });
 
