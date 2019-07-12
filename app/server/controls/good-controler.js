@@ -8,7 +8,9 @@ exports.addGood = function (req, res) {
       remind_date: req.body.remindDate || null, //提醒时间
       name: req.body.name,
       parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null,
-      quantity: req.body.quantity || 1 //数量
+      quantity: req.body.quantity || 1, //数量
+      current_location_name: req.body.currentLocationName || null,
+      current_location_id: req.body.currentLocationID || null,
     },
     function (e, data) {
       if (e) {
@@ -127,7 +129,9 @@ exports.updataGoodInfoById = function (req, res) {
       remind_date: req.body.remindDate || null, //提醒时间
       name: req.body.name,
       quantity: req.body.quantity || 1, // 数量
-      parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null
+      parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null,
+      current_location_name: req.body.currentLocationName || null,
+      current_location_id: req.body.currentLocationID || null,
     },
     function (err, data) {
       if (err) {

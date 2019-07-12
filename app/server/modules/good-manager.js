@@ -95,6 +95,8 @@ exports.getGoodInfoById = function(data, callback) {
       type: 1,
       quantity: 1,
       remind_date: 1,
+      current_location_name: 1,
+      current_location_id: 1,
     },
     function(e, res) {
       if (e) callback(e);
@@ -199,9 +201,10 @@ function getUserAllGoodList(user_id, callback) {
       else callback(null, res);
     });
 }
+exports.getUserAllGoodList = getUserAllGoodList;
 
 /**
- * 批量删除盒子
+ * 批量删除物品
  * @param {Object} data
  * * @param {Array} data.list
  * * @param {String} data.user_id
@@ -295,6 +298,8 @@ exports.updateGoodInfo = function(data, callback) {
         o.pic_address = data.pic_address;
         o.expire_date = data.expire_date;
         o.update_timestamp = moment().format('x');
+        o.current_location_name = data.current_location_name;
+        o.current_location_id = data.current_location_id;
 
         //
         goods.save(
@@ -316,6 +321,8 @@ exports.updateGoodInfo = function(data, callback) {
                 type: o.type,
                 date: o.date,
                 create_timestamp: o.create_timestamp,
+                current_location_name: o.current_location_name,
+                current_location_id: o.current_location_id,
               });
           },
         );

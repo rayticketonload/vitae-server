@@ -4,6 +4,7 @@ var CT = require("./modules/country-list");
 var AC = require("./controls/account-controler");
 var PC = require("./controls/pack-controler");
 var GC = require("./controls/good-controler");
+var MC = require("./controls/msg-controler");
 var PAGC = require("./controls/packAndGood-controler");
 var FILE = require("./controls/file-controler");
 
@@ -128,6 +129,16 @@ module.exports = function(app) {
    * 删除单个物品
    */
   app.post("/api/delSingleItemById", GC.delSingleItemById);
+
+  /**
+   * 获取信息
+   */
+  app.get("/api/msg", MC.initMsg);
+
+  /**
+   * 逻辑删除单条信息
+   */
+  app.post("/api/deleteMsgById", MC.deleteMsgById);
 
   /**
    * 上传
