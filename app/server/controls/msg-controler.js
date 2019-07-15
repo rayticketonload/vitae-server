@@ -18,7 +18,8 @@ exports.initMsg = function(req, res) {
   m = m < 10 ? ('0' + m) : m;
   let d = getDate.getDate();
   d = d < 10 ? ('0' + d) : d;
-  let today = `${y}-${m}-${d}`;
+  // 今天的时间戳
+  let today = Date.parse(new Date(`${y}-${m}-${d}`));
 
   // 先获取用户全部物品的 list
   GM.getUserAllGoodList (
@@ -30,6 +31,7 @@ exports.initMsg = function(req, res) {
           res.status(200).send({
             code: 200,
             errMsg: '当前用户没有创建物品',
+            msg_list: [],
           });
           return;
         }
@@ -37,13 +39,22 @@ exports.initMsg = function(req, res) {
         // 第一次过滤，得出 today 能够发出消息提醒的物品列表
         let filter_1stTime = [];
         data.map(item => { 
-          if (item.remind_date && item.remind_date == today) {
+          if (
+            item.remind_date && 
+            Date.parse(new Date(item.remind_date)) == today ||
+            item.remind_date &&
+            Date.parse(new Date(item.remind_date)) < today
+          ) {
             filter_1stTime.push(item);
           }
           // 今天新建的物品，并且设置今天是过期日期的物品是无法进一步设置提醒日期的，所以这类物品的过期日期就是提醒日期
-          if (item.expire_date && item.expire_date == today && !item.remind_date) {
-            filter_1stTime.push(item);
-          }
+          // if (
+          //   item.expire_date && 
+          //   Date.parse(new Date(item.expire_date)) == today &&
+          //   !item.remind_date
+          // ) {
+          //   filter_1stTime.push(item);
+          // }
         });
 
         // 组装信息对象
@@ -107,25 +118,13 @@ exports.initMsg = function(req, res) {
 
               // 用户之前是有信息的
               if (data.length > 0) {
-
                 // 进行第二次过滤，把 today 能够发出消息提醒的物品，但又已经发过信息的，过滤出来
                 let needToSplice = [];
                 let filter_2ndTime = [];
 
                 filter_1stTime.map(item => {
                   data.map(f => {
-                    if (
-                        item.id == f.item_id && 
-                        item.remind_date && 
-                        f.item_remind_date &&
-                        item.expire_date &&
-                        f.item_expire_date &&
-                        item.expire_date == f.item_expire_date &&
-                        item.remind_date == f.item_remind_date
-                      ) {
-                      needToSplice.push(item);
-                    };
-                    if (item.id == f.item_id && !item.remind_date && f.item_expire_date && item.expire_date == f.item_expire_date) {
+                    if (item.id == f.item_id && item.remind_date == f.item_remind_date) {
                       needToSplice.push(item);
                     };
                   });
