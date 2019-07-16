@@ -77,7 +77,7 @@ exports.getToken = function(req, res) {
                 });
               });
             } else {
-              console.log(o);
+              // console.log(o);
               user = o;
             }
             var token = jwt.sign(user, COMFIG.SECRET_KEY, {
@@ -136,10 +136,10 @@ exports.getUserInfo = function(req, res) {
               if (data.length > 0) {
                 goods = data.concat();
               }
-              console.log({
-                packTotal: packs,
-                goodTotal: goods
-              });
+              // console.log({
+              //   packTotal: packs,
+              //   goodTotal: goods
+              // });
               userData.packTotal = packs.length > 0 ? packs.length - 1 : 0; //不包括自己
               userData.goodTotal = goods.length;
               res.status(200).send({

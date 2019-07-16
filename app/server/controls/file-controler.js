@@ -28,10 +28,10 @@ exports.uploadConfig = upload;
 exports.uploadPhoto = function(req, res) {
   var file = req.file;
   if (file) {
-    console.log("文件类型：%s", file.mimetype);
-    console.log("原始文件名：%s", file.originalname);
-    console.log("文件大小：%s", file.size);
-    console.log("文件保存路径：%s", file.path);
+    // console.log("文件类型：%s", file.mimetype);
+    // console.log("原始文件名：%s", file.originalname);
+    // console.log("文件大小：%s", file.size);
+    // console.log("文件保存路径：%s", file.path);
 
     res.status(200).send({
       code: 200,

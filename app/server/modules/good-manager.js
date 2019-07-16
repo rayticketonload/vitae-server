@@ -21,7 +21,7 @@ var db = new MongoDB(
 );
 db.open(function(e, d) {
   if (e) {
-    console.log(e);
+    // console.log(e);
   } else {
     if (process.env.NODE_ENV == 'live') {
       db.authenticate(process.env.DB_USER, process.env.DB_PASS, function(
