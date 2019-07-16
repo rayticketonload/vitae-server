@@ -5,9 +5,12 @@ exports.addGood = function (req, res) {
       pic_address: req.body.pic || "", //图片
       user_id: req.user.user_id,
       expire_date: req.body.expireDate || null, //过期时间
+      remind_date: req.body.remindDate || null, //提醒时间
       name: req.body.name,
       parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null,
-      quantity: req.body.quantity || 1 //数量
+      quantity: req.body.quantity || 1, //数量
+      current_location_name: req.body.currentLocationName || null,
+      current_location_id: req.body.currentLocationID || null,
     },
     function (e, data) {
       if (e) {
@@ -123,8 +126,12 @@ exports.updataGoodInfoById = function (req, res) {
       pic_address: req.body.pic || [], //图片
       user_id: req.user.user_id,
       expire_date: req.body.expireDate || null, //过期时间
+      remind_date: req.body.remindDate || null, //提醒时间
       name: req.body.name,
-      parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null
+      quantity: req.body.quantity || 1, // 数量
+      parent_id: (req.body.parentId && req.body.parentId.trim().toString()) || null,
+      current_location_name: req.body.currentLocationName || null,
+      current_location_id: req.body.currentLocationID || null,
     },
     function (err, data) {
       if (err) {
@@ -140,6 +147,31 @@ exports.updataGoodInfoById = function (req, res) {
       }
     }
   );
+};
 
-
+/**
+ * 删除单个物品
+ */
+exports.delSingleItemById = function(req, res) {
+  GM.delSingleItemById(
+    {
+      id: req.body.id,
+      user_id: req.user.user_id,
+    },
+    function (err, data) {
+      if (!err) {
+        res.status(200).send({
+          code: 200,
+          success: true,
+          data: data,
+        });
+      } else {
+        res.status(200).send({
+          code: 200,
+          success: false,
+          errMsg: err,
+        });
+      }
+    }
+  )
 };
