@@ -4,7 +4,6 @@ var PC = require("../controls/pack-controler");
 var GM = require('../modules/good-manager');
 var MM = require('../modules/msg-manager');
 var moment = require('moment');
-var getDate = new Date();
 
 /**
  * 遍历一次消息
@@ -13,6 +12,7 @@ var getDate = new Date();
  */
 exports.initMsg = function(req, res) {
   // 组合出 today 的日期字符串，拼装成和数据里面的日期字符串格式一样
+  const getDate = new Date();
   let y = getDate.getFullYear();
   let m = getDate.getMonth() + 1
   m = m < 10 ? ('0' + m) : m;
@@ -150,6 +150,7 @@ exports.initMsg = function(req, res) {
                     needToSplice: needToSplice,
                     filter_2ndTime: filter_2ndTime,
                     msg_list: data,
+                    today: today, // 1563235200000
                   });
                   return;
                 }
