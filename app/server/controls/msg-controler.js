@@ -146,11 +146,12 @@ exports.initMsg = function(req, res) {
                   res.status(200).send({
                     code: 200,
                     errMsg: '没有新信息',
-                    filter_1stTime: filter_1stTime,
-                    needToSplice: needToSplice,
-                    filter_2ndTime: filter_2ndTime,
+                    // flow: {
+                    //   filter_1stTime: filter_1stTime,
+                    //   needToSplice: needToSplice,
+                    //   filter_2ndTime: filter_2ndTime,
+                    // },
                     msg_list: data,
-                    today: today, // 1563235200000
                   });
                   return;
                 }
@@ -187,10 +188,13 @@ exports.initMsg = function(req, res) {
                           if (!err) {
                             res.status(200).send({
                               code: 200,
-                              filter_2ndTime: filter_2ndTime,
-                              preMsgList: preMsgList,
-                              needToSplice: needToSplice,
-                              final: final,
+                              // flow: {
+                              //   filter_1stTime: filter_1stTime,
+                              //   needToSplice: needToSplice,
+                              //   filter_2ndTime: filter_2ndTime,
+                              //   preMsgList: preMsgList,
+                              //   final: final,
+                              // },
                               msg_list: data,
                             });
                           } else {
