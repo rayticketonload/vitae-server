@@ -351,7 +351,7 @@ function getListIncludeTotalInfoById(req, res) {
     function(err, data) {
       if (!err) {
         var pasks = data.concat(); // 查出来的盒子数（ 没包括 所有的物品数量 所有盒子数量 ）
-        console.log('pasks', pasks);
+        // console.log('pasks', pasks);
         //
         PM.getUserAllPackList(req.user.user_id, function(err, data) {
           var allPasks = data.concat(); //查当前用户全部盒子
