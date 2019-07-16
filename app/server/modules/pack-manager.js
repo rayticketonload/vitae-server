@@ -290,8 +290,6 @@ exports.updatePackInfo = function (data, callback) {
   });
 };
 
-exports.getUserAllPackList = getUserAllPackList;
-
 /**
  * 查询当前用户的所有盒子
  * @param {*} user_id
@@ -310,6 +308,7 @@ function getUserAllPackList(user_id, callback) {
     else callback(null, res);
   });
 }
+exports.getUserAllPackList = getUserAllPackList;
 
 /**
  * 批量删除盒子
