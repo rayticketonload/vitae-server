@@ -16,17 +16,17 @@ var db = new MongoDB(
   dbName,
   new Server(dbHost, dbPort, {
     auto_reconnect: true,
-  }),
-  {
+  }), {
     w: 1,
   },
 );
-db.open(function(e, d) {
+
+db.open(function (e, d) {
   if (e) {
     console.log(e);
   } else {
     if (process.env.NODE_ENV == 'live') {
-      db.authenticate(process.env.DB_USER, process.env.DB_PASS, function(
+      db.authenticate(process.env.DB_USER, process.env.DB_PASS, function (
         e,
         res,
       ) {
@@ -35,16 +35,16 @@ db.open(function(e, d) {
         } else {
           console.log(
             'mongo :: authenticated and connected to database :: "' +
-              dbName +
-              '"',
+            dbName +
+            '"',
           );
         }
       });
     } else {
       console.log(
         'mongo :: connected to database :: "' +
-          dbName +
-          '" :: collection :: msg',
+        dbName +
+        '" :: collection :: msg',
       );
     }
   }
@@ -58,15 +58,12 @@ var msg = db.collection('msg');
  */
 function getUserAllMsg(user_id, callback) {
   msg
-    .find(
-      {
-        user_id: user_id,
-      },
-      {
-        user_id: 0,
-      }
-    )
-    .toArray(function(e, res) {
+    .find({
+      user_id: user_id,
+    }, {
+      user_id: 0,
+    })
+    .toArray(function (e, res) {
       if (e) callback(e);
       else callback(null, res);
     });
@@ -92,9 +89,16 @@ exports.getUserAllMsg = getUserAllMsg;
  */
 function addMsg(data, callback) {
   IDM.getNextSequence("msgid", function (err, result) {
-    msg.insert(data, function (err, result) {
+    if (data.length <= 0) {
+      callback(null, data);
+      return;
+    }
+    msg.insert(data, {
+      safe: true
+    }, function (err, result) {
       if (callback) callback(err, data);
     });
+
   });
 }
 exports.addMsg = addMsg;
@@ -106,12 +110,11 @@ exports.addMsg = addMsg;
  * @param {*} callback
  */
 function deleteMsgById(data, callback) {
-  msg.findOne(
-    {
+  msg.findOne({
       user_id: data.user_id,
       _id: ObjectId(data.id),
     },
-    function(e, o) {
+    function (e, o) {
       if (e) {
         callback(e);
         return;
@@ -124,11 +127,10 @@ function deleteMsgById(data, callback) {
         o.del = true;
 
         msg.save(
-          o,
-          {
+          o, {
             safe: true,
           },
-          function(e) {
+          function (e) {
             if (e) callback(e);
             else
               callback(null, {
