@@ -27,23 +27,24 @@ exports.initMsg = function(req, res) {
     function (err, data) {
       if (!err) {
 
-        if (data.length == 0) {
-          res.status(200).send({
-            code: 200,
-            errMsg: '当前用户没有创建物品',
-            msg_list: [],
-          });
-          return;
-        }
+        // if (data.length == 0) {
+        //   res.status(200).send({
+        //     code: 200,
+        //     errMsg: '当前用户没有创建物品',
+        //     msg_list: [],
+        //   });
+        //   return;
+        // }
 
-        // 第一次过滤，得出 today 能够发出消息提醒的物品列表
+        // 第一次过滤，得出提醒日期是今天的所有物品
         let filter_1stTime = [];
         data.map(item => { 
           if (
             item.remind_date && 
-            Date.parse(new Date(item.remind_date)) == today ||
-            item.remind_date &&
-            Date.parse(new Date(item.remind_date)) < today
+            Date.parse(new Date(item.remind_date)) == today 
+            // ||
+            // item.remind_date &&
+            // Date.parse(new Date(item.remind_date)) > today
           ) {
             filter_1stTime.push(item);
           }
@@ -95,7 +96,10 @@ exports.initMsg = function(req, res) {
                           if (!err) {
                             res.status(200).send({
                               code: 200,
-                              msg: '用户第一次发生信息接收',
+                              msg: '用户之前一条信息都没有',
+                              flow: {
+                                filter_1stTime: filter_1stTime,
+                              },
                               msg_list: data,
                             });
                           } else {
@@ -130,15 +134,20 @@ exports.initMsg = function(req, res) {
                   });
                 });
 
-                needToSplice.map(item => {
-                  filter_1stTime.map(k => {
-                    if (item.id != k.id) {
-                      filter_2ndTime.push(k);
-                    } else {
-                      filter_2ndTime.splice(k);
-                    }
+                if (needToSplice.length > 0) {
+                  needToSplice.map(item => {
+                    filter_1stTime.map(k => {
+                      if (item.id != k.id) {
+                        filter_2ndTime.push(k);
+                      }
+                      else {
+                        filter_2ndTime.splice(k);
+                      }
+                    });
                   });
-                });
+                } else {
+                  filter_2ndTime = filter_1stTime;
+                };
 
                 // 根据第二次过滤的结果，输出最终可以发消息的物品
                 let final = null;
@@ -146,11 +155,11 @@ exports.initMsg = function(req, res) {
                   res.status(200).send({
                     code: 200,
                     errMsg: '没有新信息',
-                    // flow: {
-                    //   filter_1stTime: filter_1stTime,
-                    //   needToSplice: needToSplice,
-                    //   filter_2ndTime: filter_2ndTime,
-                    // },
+                    flow: {
+                      filter_1stTime: filter_1stTime,
+                      needToSplice: needToSplice,
+                      filter_2ndTime: filter_2ndTime,
+                    },
                     msg_list: data,
                   });
                   return;
@@ -188,13 +197,13 @@ exports.initMsg = function(req, res) {
                           if (!err) {
                             res.status(200).send({
                               code: 200,
-                              // flow: {
-                              //   filter_1stTime: filter_1stTime,
-                              //   needToSplice: needToSplice,
-                              //   filter_2ndTime: filter_2ndTime,
-                              //   preMsgList: preMsgList,
-                              //   final: final,
-                              // },
+                              flow: {
+                                filter_1stTime: filter_1stTime,
+                                needToSplice: needToSplice,
+                                filter_2ndTime: filter_2ndTime,
+                                preMsgList: preMsgList,
+                                final: final,
+                              },
                               msg_list: data,
                             });
                           } else {
@@ -214,6 +223,7 @@ exports.initMsg = function(req, res) {
                   },
                 );
               }
+              
             } else {
               res.status(200).send({
                 code: 100,
